@@ -1,13 +1,5 @@
 {
-    "routes": [
-      {
-        "src": "/[^.]+",
-        "dest": "/",
-        "status": 200
-      }
-    ],
-    "rewrites": [
-      { "source": "/(.*)", "destination": "https://www.jonadest.com/$1" }
-    ]
-  }
-  
+  "rewrites": [
+    { "source": "/(.*)", "destination": "https://www.jonadest.com/$1" }
+  ]
+}
