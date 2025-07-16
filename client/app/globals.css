@@ -142,7 +142,7 @@ html {
   width: auto;
   height: auto;
   border-radius: 0.5rem;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .rich-text {

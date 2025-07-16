@@ -22,6 +22,15 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/blog/layout.jsx",
+    "app/blog/[id]/page.jsx",
+    "components/blog/SingleBlog.jsx",
+    "components/blog/SingleBlogPage.jsx"
+  ],
   "exclude": ["node_modules"]
 }

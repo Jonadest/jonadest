@@ -30,7 +30,7 @@ const Sidebar = () => {
         <p className="hidden md:inline-block">Dashboard</p>
       </Link>
 
-      <Link href="/blog/admin/addBlog" className={linkClass("/admin/addBlog")}>
+      <Link href="/blog/admin/add" className={linkClass("/admin/add")}>
         <svg
           className="size-6"
           fill="none"

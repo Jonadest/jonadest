@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
@@ -12,6 +13,24 @@ const SingleBlog = ({ blog }) => {
   const formattedTime = date.format("h:mm A");
   const relativeTimeStr = date.fromNow();
   const utcTime = dayjs.utc(blog.createdAt).format("HH:mm [UTC]");
+
+  const blogContentRef = useRef(null);
+  const [cleanContent, setCleanContent] = useState("");
+
+  useEffect(() => {
+    // Sanitize and modify <a> tags to open in new tab
+    const raw = DOMPurify.sanitize(blog.description);
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = raw;
+
+    const links = tempDiv.querySelectorAll("a");
+    links.forEach((a) => {
+      a.setAttribute("target", "_blank");
+      a.setAttribute("rel", "noopener noreferrer");
+    });
+
+    setCleanContent(tempDiv.innerHTML);
+  }, [blog.description]);
 
   return (
     <div className="max-w-3xl mx-auto p-6 mt-10">
@@ -60,10 +79,9 @@ const SingleBlog = ({ blog }) => {
       </div>
 
       <div
+        ref={blogContentRef}
         className="blog-content p-6 bg-base-200/50"
-        dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(blog.description),
-        }}
+        dangerouslySetInnerHTML={{ __html: cleanContent }}
       />
     </div>
   );
