@@ -44,7 +44,7 @@ const Bloglist = () => {
 
         {filteredBlogs().length === 0 && (
           <p className="text-center text-gray-500 col-span-full">
-            Fetching Blogs Data...
+            Fetching Blogs Data... <br /> <br /> Refresh if taking longer
           </p>
         )}
       </div>

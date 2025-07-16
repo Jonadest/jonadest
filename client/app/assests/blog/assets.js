@@ -59,10 +59,11 @@ export const assets = {
 };
 export const blogCategories = [
   "All",
-  "Braids",
-  "JBC Products",
-  "Recommended Products",
-  "Accessories",
+  "Technology",
+  "Business",
+  "Sports",
+  "Lifestyle",
+  "Inspiration",
 ];
 
 export const blog_data = [

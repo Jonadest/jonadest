@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import toast from "react-hot-toast";
 import { parse } from "marked";
 
@@ -148,15 +147,15 @@ const AddBlog = () => {
     >
       <div className="bg-base-300 w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded">
         <p className="text-xs">Upload thumbnail</p>
-        <label htmlFor="image" className="cursor-pointer">
+        <label className="cursor-pointer block w-32 h-32 border border-dashed border-gray-400 rounded flex items-center justify-center overflow-hidden bg-base-200">
           {!image ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={1.5}
+              strokeWidth="1.5"
               stroke="currentColor"
-              className="size-6 mt-2 h-16 "
+              className="w-10 h-10 text-gray-500"
             >
               <path
                 strokeLinecap="round"
@@ -165,7 +164,11 @@ const AddBlog = () => {
               />
             </svg>
           ) : (
-            URL.createObjectURL(image)
+            <img
+              src={URL.createObjectURL(image)}
+              alt="Preview"
+              className="object-cover w-full h-full"
+            />
           )}
 
           <input

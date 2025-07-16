@@ -31,7 +31,7 @@ const Navbar = () => {
         onClick={handleLogoClick}
         className="flex lg:hidden font-bold uppercase tracking-wider btn btn-ghost md:text-2xl cursor-pointer"
       >
-        {token ? "Admin" : "JBC"}
+        {token ? "Admin" : "Jonadest"}
       </button>
 
       {/* Logo (Large Screen) */}
@@ -39,7 +39,7 @@ const Navbar = () => {
         onClick={handleLogoClick}
         className="hidden lg:flex font-bold uppercase tracking-wider btn  text-xl cursor-pointer"
       >
-        {token ? "Admin" : "JBC Blog"}
+        {token ? "Admin" : "Jonadest"}
       </button>
 
       {/* Theme toggle */}

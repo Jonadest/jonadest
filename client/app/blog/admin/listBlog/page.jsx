@@ -14,7 +14,7 @@ const ListBlog = () => {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("/api/blog/admin/blogs");
+      const { data } = await axios.get("/api/blog/admin/listBlog");
       if (data.success) {
         setBlogs(data.blogs);
       } else {
