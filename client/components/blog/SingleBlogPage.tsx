@@ -1,26 +1,33 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
 import toast from "react-hot-toast";
-import SinglePage from "@/components/blog/SinglePage";
-import Comments from "@/components/blog/Comments";
 import Loading from "@/components/blog/Loading";
+import Comments from "@/components/blog/Comments";
 import { useAppContext } from "@/app/context/AppContext";
+import SingleBlog from "./SingleBlog";
 
-const BlogPage = () => {
+// ✅ Define blog type
+export interface BlogType {
+  _id: string;
+  title: string;
+  subTitle: string;
+  description: string;
+  image: string;
+  hashtags: string[];
+  createdAt: string;
+}
+
+const SingleBlogPage = ({ id }: { id: string }) => {
   const { axios } = useAppContext();
-  const params = useParams();
-  const id = params?.id;
-
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<BlogType | null>(null);
 
   const fetchBlogData = useCallback(async () => {
     try {
       const { data } = await axios.get(`/api/blog/${id}`);
       data.success ? setData(data.blog) : toast.error(data.message);
-    } catch (error) {
-      toast.error(error.message);
+    } catch (error: any) {
+      toast.error(error?.message || "An error occurred.");
     }
   }, [axios, id]);
 
@@ -30,7 +37,7 @@ const BlogPage = () => {
 
   return data ? (
     <div>
-      <SinglePage props={data} />
+      <SingleBlog blog={data} />
       <Comments blogId={data._id} />
     </div>
   ) : (
@@ -38,4 +45,4 @@ const BlogPage = () => {
   );
 };
 
-export default BlogPage;
+export default SingleBlogPage;

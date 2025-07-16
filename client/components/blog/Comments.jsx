@@ -11,14 +11,16 @@ import {
   FaWhatsapp,
   FaInstagram,
 } from "react-icons/fa";
-import { useParams } from "next/navigation";
 import { useAppContext } from "@/app/context/AppContext";
 
 dayjs.extend(relativeTime);
 
-const Comments = () => {
+// ✅ Type for component props
+/**
+ * @param {{ blogId: string }} props
+ */
+const Comments = ({ blogId }) => {
   const { axios } = useAppContext();
-  const { id } = useParams();
 
   const [comments, setComments] = useState([]);
   const [name, setName] = useState("");
@@ -26,38 +28,40 @@ const Comments = () => {
   const [blogUrl, setBlogUrl] = useState("");
   const shareText = encodeURIComponent("Check out this blog post!");
 
-  // Handle blog URL on client side only
+  // ✅ Set blog URL on client side
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const url = `${window.location.origin}/blog/${id}`;
+      const url = `${window.location.origin}/blog/${blogId}`;
       setBlogUrl(url);
     }
-  }, [id]);
+  }, [blogId]);
 
   const encodedUrl = encodeURIComponent(blogUrl);
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const { data } = await axios.post("/api/blog/comment", { blogId: id });
+        const { data } = await axios.post("/api/blog/comment", {
+          blogId,
+        });
         if (data.success) {
           setComments(data.comments);
         } else {
           toast.error(data.message);
         }
       } catch (error) {
-        toast.error(error.message);
+        toast.error(error?.message || "Failed to fetch comments.");
       }
     };
 
-    if (id) fetchComments();
-  }, [axios, id]);
+    if (blogId) fetchComments();
+  }, [axios, blogId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data } = await axios.post("/api/blog/add-comment", {
-        blog: id,
+        blog: blogId,
         name,
         content,
       });
@@ -74,7 +78,7 @@ const Comments = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.message || "Something went wrong.");
     }
   };
 

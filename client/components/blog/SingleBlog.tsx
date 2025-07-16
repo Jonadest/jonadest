@@ -1,17 +1,18 @@
+import DOMPurify from "dompurify";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
-import DOMPurify from "dompurify";
+import { BlogType } from "./SingleBlogPage";
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
-const SinglePage = ({ props }) => {
-  const date = dayjs(props.createdAt);
+const SingleBlog = ({ blog }: { blog: BlogType }) => {
+  const date = dayjs(blog.createdAt);
   const formattedDate = date.format("MMMM D, YYYY");
   const formattedTime = date.format("h:mm A");
   const relativeTimeStr = date.fromNow();
-  const utcTime = dayjs.utc(props.createdAt).format("HH:mm [UTC]");
+  const utcTime = dayjs.utc(blog.createdAt).format("HH:mm [UTC]");
 
   return (
     <div className="max-w-3xl mx-auto p-6 mt-10">
@@ -23,20 +24,19 @@ const SinglePage = ({ props }) => {
         <h1
           className="text-[45px] font-bold leading-14 py-6"
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(props.title),
+            __html: DOMPurify.sanitize(blog.title),
           }}
-        ></h1>
+        />
         <p
           className="text-[18px] text-center"
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(props.subTitle),
+            __html: DOMPurify.sanitize(blog.subTitle),
           }}
-        ></p>
+        />
 
-        {/* ✅ Hashtags */}
-        {props.hashtags && props.hashtags.length > 0 && (
+        {blog.hashtags && blog.hashtags.length > 0 && (
           <div className="flex flex-wrap justify-center gap-2 mt-4">
-            {props.hashtags.map((tag, index) => (
+            {blog.hashtags.map((tag, index) => (
               <span
                 key={index}
                 className="text-xs btn btn-outline px-2 py-1 rounded-md"
@@ -54,7 +54,7 @@ const SinglePage = ({ props }) => {
 
       <div className="cover-image flex justify-center">
         <img
-          src={props.image}
+          src={blog.image}
           alt="blog image"
           className=" h-[500px] object-cover rounded-lg"
         />
@@ -63,11 +63,11 @@ const SinglePage = ({ props }) => {
       <div
         className="blog-content p-6 bg-base-200/50"
         dangerouslySetInnerHTML={{
-          __html: DOMPurify.sanitize(props.description),
+          __html: DOMPurify.sanitize(blog.description),
         }}
       />
     </div>
   );
 };
 
-export default SinglePage;
+export default SingleBlog;
