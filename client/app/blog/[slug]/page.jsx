@@ -5,7 +5,7 @@ export async function generateMetadata({ params }) {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/blog/${slug}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${slug}`,
       { cache: "no-store" }
     );
 

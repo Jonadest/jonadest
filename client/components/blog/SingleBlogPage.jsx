@@ -13,7 +13,7 @@ const SingleBlogPage = ({ slug }) => {
 
   const fetchBlogData = useCallback(async () => {
     try {
-      const res = await axios.get(`/api/blog/slug/${slug}`);
+      const res = await axios.get(`/api/blog/slug/${slug || _d}`);
       if (res.data.success) {
         setData(res.data.blog);
       } else {

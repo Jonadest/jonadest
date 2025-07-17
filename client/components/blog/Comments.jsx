@@ -15,34 +15,58 @@ import { useAppContext } from "@/app/context/AppContext";
 
 dayjs.extend(relativeTime);
 
-// ✅ Type for component props
-/**
- * @param {{ blogId: string }} props
- */
-const Comments = ({ blogId }) => {
+const Comments = ({ slug }) => {
   const { axios } = useAppContext();
-
+  const [blogData, setBlogData] = useState(null);
   const [comments, setComments] = useState([]);
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
   const [blogUrl, setBlogUrl] = useState("");
-  const shareText = encodeURIComponent("Check out this blog post!");
 
-  // ✅ Set blog URL on client side
+  // Fetch blog data and set URL
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const url = `${window.location.origin}/blog/${blogId}`;
-      setBlogUrl(url);
-    }
-  }, [blogId]);
+    const fetchBlogData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${slug}`,
+          { cache: "no-store" }
+        );
 
-  const encodedUrl = encodeURIComponent(blogUrl);
+        if (!res.ok) throw new Error("Failed to fetch blog data");
+        const data = await res.json();
+        setBlogData(data);
 
+        // Set URL for sharing
+        const url = `${window.location.origin}/blog/${slug}`;
+        setBlogUrl(url);
+
+        // Update document title for client-side
+        document.title = data?.title || "Jonadest Blog";
+
+        // Update meta tags (note: this won't affect SEO crawlers)
+        const metaDescription = document.querySelector(
+          'meta[name="description"]'
+        );
+        if (metaDescription) {
+          metaDescription.setAttribute(
+            "content",
+            data?.subTitle || "Explore amazing tech content on Jonadest."
+          );
+        }
+      } catch (error) {
+        console.error("Blog data fetch error:", error);
+      }
+    };
+
+    fetchBlogData();
+  }, [slug]);
+
+  // Fetch comments
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const { data } = await axios.post("/api/blog/comment", {
-          blogId,
+          slug, // Changed from blogId to slug
         });
         if (data.success) {
           setComments(data.comments);
@@ -54,14 +78,14 @@ const Comments = ({ blogId }) => {
       }
     };
 
-    if (blogId) fetchComments();
-  }, [axios, blogId]);
+    if (slug) fetchComments();
+  }, [axios, slug]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data } = await axios.post("/api/blog/add-comment", {
-        blog: blogId,
+        slug, // Changed from blogId to slug
         name,
         content,
       });
@@ -82,12 +106,20 @@ const Comments = ({ blogId }) => {
     }
   };
 
+  const shareText = blogData
+    ? encodeURIComponent(`Check out this blog post: ${blogData.title}`)
+    : encodeURIComponent("Check out this blog post!");
+
+  const encodedUrl = encodeURIComponent(blogUrl);
+
   const handleNativeShare = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Check out this blog post!",
-          text: "I found this interesting blog post you might like",
+          title: blogData?.title || "Jonadest Blog",
+          text:
+            blogData?.subTitle ||
+            "I found this interesting blog post you might like",
           url: blogUrl,
         });
       } catch {
