@@ -112,7 +112,7 @@ export const getAllBlogs = async (req, res) => {
 };
 
 /** Get Single Blog */
-export const getBlogById = async (req, res) => {
+/* export const getBlogById = async (req, res) => {
   try {
     const { blogId } = req.params;
     const blog = await Blog.findById(blogId);
@@ -123,6 +123,25 @@ export const getBlogById = async (req, res) => {
     res.json({ success: true, blog });
   } catch (error) {
     res.json({ success: false, message: error.message });
+  }
+}; */
+
+export const getBlogBySlug = async (req, res) => {
+  try {
+    const blog = await Blog.findOne({ slug: req.params.slug });
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+    res.json({ success: true, blog });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching blog",
+      error: error.message,
+    });
   }
 };
 
@@ -207,24 +226,5 @@ export const generateContent = async (req, res) => {
     res.json({ success: true, content });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-export const getBlogBySlug = async (req, res) => {
-  try {
-    const blog = await Blog.findOne({ slug: req.params.slug });
-    if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: "Blog not found",
-      });
-    }
-    res.json({ success: true, blog });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching blog",
-      error: error.message,
-    });
   }
 };

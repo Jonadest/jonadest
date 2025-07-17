@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/app/context/AppContext";
-import ThemeController from "./ThemeController";
+import ThemeController from "@/components/blog/ThemeController";
 
 const Navbar = () => {
   const { axios, token, setToken } = useAppContext();
@@ -44,7 +44,6 @@ const Navbar = () => {
 
       {/* Theme toggle */}
       <ThemeController />
-
       {/* Right Side Button / Icon (Large screen) */}
       <button
         onClick={handleAuthClick}

@@ -5,7 +5,7 @@ import {
   deleteBlogById,
   generateContent,
   getAllBlogs,
-  getBlogById,
+  //getBlogById,
   getBlogBySlug,
   getBlogComments,
   togglePublish,
@@ -19,7 +19,7 @@ const blogRouter = express.Router();
 /* PUBLIC */
 blogRouter.get("/all", getAllBlogs);
 blogRouter.get("/slug/:slug", getBlogBySlug);
-blogRouter.get("/:blogId", getBlogById);
+//blogRouter.get("/:blogId", getBlogById);
 blogRouter.post("/add-comment", addComment);
 blogRouter.post("/comment", getBlogComments);
 blogRouter.post("/upload-image", upload.single("image"), uploadBlogImage);
