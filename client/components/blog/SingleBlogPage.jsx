@@ -7,13 +7,13 @@ import Loading from "@/components/blog/Loading";
 import Comments from "@/components/blog/Comments";
 import { useAppContext } from "@/app/context/AppContext";
 
-const SingleBlogPage = ({ id }) => {
+const SingleBlogPage = ({ slug }) => {
   const { axios } = useAppContext();
   const [data, setData] = useState(null);
 
   const fetchBlogData = useCallback(async () => {
     try {
-      const res = await axios.get(`/api/blog/${id}`);
+      const res = await axios.get(`/api/blog/slug/${slug}`);
       if (res.data.success) {
         setData(res.data.blog);
       } else {
@@ -22,16 +22,16 @@ const SingleBlogPage = ({ id }) => {
     } catch (error) {
       toast.error(error?.message || "An error occurred.");
     }
-  }, [axios, id]);
+  }, [axios, slug]);
 
   useEffect(() => {
-    if (id) fetchBlogData();
-  }, [fetchBlogData, id]);
+    if (slug) fetchBlogData();
+  }, [fetchBlogData, slug]);
 
   return data ? (
     <div>
       <SingleBlog blog={data} />
-      <Comments blogId={data._id} />
+      <Comments blogId={data.id} />
     </div>
   ) : (
     <Loading />

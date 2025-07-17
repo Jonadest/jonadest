@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 
 const BlogCard = ({ blog }) => {
-  const { title, subTitle, category, image, _id } = blog;
+  const { title, subTitle, category, image, slug } = blog;
   const router = useRouter();
 
   return (
     <div
-      onClick={() => router.push(`/blog/${_id}`)}
+      onClick={() => router.push(`/blog/${slug}`)}
       className="w-full max-w-xs mx-auto rounded-xl overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-xl cursor-pointer"
     >
       <div

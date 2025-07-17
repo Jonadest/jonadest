@@ -28,7 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/blog/layout.jsx",
-    "app/blog/[id]/page.jsx",
+    "app/blog/[slug]/page.jsx",
     "components/blog/SingleBlog.jsx",
     "components/blog/SingleBlogPage.jsx"
   ],

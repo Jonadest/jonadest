@@ -209,3 +209,22 @@ export const generateContent = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getBlogBySlug = async (req, res) => {
+  try {
+    const blog = await Blog.findOne({ slug: req.params.slug });
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+    res.json({ success: true, blog });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching blog",
+      error: error.message,
+    });
+  }
+};
