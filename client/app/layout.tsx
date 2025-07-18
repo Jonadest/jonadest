@@ -19,7 +19,7 @@ const sourGummy = Sour_Gummy({
 });
 
 export const metadata: Metadata = {
-  title: "Jonadest Tech",
+  title: "Jonadest | Your Tech Agency",
   description:
     "Your go-to tech agency for software, printing, marketing, and more.",
 };
