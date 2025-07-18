@@ -18,7 +18,8 @@ const blogRouter = express.Router();
 
 /* PUBLIC */
 blogRouter.get("/all", getAllBlogs);
-blogRouter.get("/slug/:slug", async (req, res) => {
+
+/* blogRouter.get("/slug/:slug", async (req, res) => {
   try {
     const blog = await Blog.findOne({ slug: req.params.slug });
     if (!blog) {
@@ -31,8 +32,9 @@ blogRouter.get("/slug/:slug", async (req, res) => {
     console.error("Error fetching blog by slug:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
-});
+}); */
 
+blogRouter.get("/slug/:slug", getBlogBySlug);
 blogRouter.get("/:blogId", getBlogById);
 blogRouter.post("/add-comment", addComment);
 blogRouter.post("/comment", getBlogComments);

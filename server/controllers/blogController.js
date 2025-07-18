@@ -111,20 +111,6 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
-export const getBlogById = async (req, res) => {
-  try {
-    const { blogId } = req.params;
-    const blog = await Blog.findById(blogId);
-
-    if (!blog) {
-      return res.json({ success: false, message: "Blog not found" });
-    }
-    res.json({ success: true, blog });
-  } catch (error) {
-    res.json({ success: false, message: error.message });
-  }
-};
-
 export const getBlogBySlug = async (req, res) => {
   try {
     const blog = await Blog.findOne({ slug: req.params.slug });
@@ -141,6 +127,20 @@ export const getBlogBySlug = async (req, res) => {
       message: "Error fetching blog",
       error: error.message,
     });
+  }
+};
+
+export const getBlogById = async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+      return res.json({ success: false, message: "Blog not found" });
+    }
+    res.json({ success: true, blog });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -170,8 +170,65 @@ export const togglePublish = async (req, res) => {
   }
 };
 
-/** Add Comment */
+/** Add Comment using Slug */
 export const addComment = async (req, res) => {
+  try {
+    const { slug, name, content } = req.body;
+
+    if (!slug || !name || !content) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+
+    const blog = await Blog.findOne({ slug });
+
+    if (!blog) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
+    }
+
+    await Comment.create({ blog: blog._id, name, content });
+
+    res.json({ success: true, message: "Comment added successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/** Get Blog Comments using Slug */
+export const getBlogComments = async (req, res) => {
+  try {
+    const { slug } = req.body;
+
+    if (!slug) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Slug is required" });
+    }
+
+    const blog = await Blog.findOne({ slug });
+
+    if (!blog) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
+    }
+
+    const comments = await Comment.find({
+      blog: blog._id,
+      isApproved: true,
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, comments });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/** Add Comment */
+/* export const addComment = async (req, res) => {
   try {
     const { blog, name, content } = req.body;
 
@@ -181,10 +238,10 @@ export const addComment = async (req, res) => {
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
-};
+}; */
 
 /** Get Blog Comments */
-export const getBlogComments = async (req, res) => {
+/* export const getBlogComments = async (req, res) => {
   try {
     const { blogId } = req.body;
 
@@ -197,7 +254,7 @@ export const getBlogComments = async (req, res) => {
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
-};
+}; */
 
 /* export const generateContent = async (req, res) => {
   try {
