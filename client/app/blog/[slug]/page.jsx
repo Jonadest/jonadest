@@ -1,30 +1,62 @@
 import BlogPostContent from "./BlogPostContent";
 
-// Metadata must be in the same file
 export async function generateMetadata({ params }) {
   const { slug } = params;
 
   try {
     const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BACKEND_URL || "172.20.10.8:5000"
-      }/api/blog/slug/${slug}`
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/slug/${slug}`
     );
     const data = await res.json();
 
-    if (!data.success) return { title: "Blog not found" };
+    if (!data.success) {
+      return { title: "Blog not found" };
+    }
+
+    const blog = data.blog;
+    const siteUrl =
+      process.env.NEXT_PUBLIC_SITE_URL || "https://www.jonadest.com";
+    const blogUrl = `${siteUrl}/blog/${slug}`;
+    const imageUrl = blog.image?.startsWith("http")
+      ? blog.image
+      : `${siteUrl}/${blog.image}`;
 
     return {
-      title: data.blog.title,
-      description: data.blog.subTitle || "A blog post from Jonadest Tech",
+      title: blog.title,
+      description: blog.subTitle || "A blog post from Jonadest Tech",
+      keywords: blog.title.split(" "),
+      alternates: {
+        canonical: blogUrl,
+      },
       openGraph: {
-        title: data.blog.title,
-        description: data.blog.subTitle,
-        images: [{ url: data.blog.image }],
+        type: "article",
+        url: blogUrl,
+        title: blog.title,
+        description: blog.subTitle || "A blog post from Jonadest Tech",
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: blog.title,
+          },
+        ],
+        siteName: "Jonadest",
+      },
+      twitter: {
+        card: "summary_large_image",
+        site: "@Jonadestboss",
+        title: blog.title,
+        description: blog.subTitle,
+        images: [imageUrl],
       },
     };
   } catch (error) {
-    return { title: "Error fetching blog" };
+    console.error("Metadata generation error:", error);
+    return {
+      title: "Error fetching blog",
+      description: "There was an error loading this blog post.",
+    };
   }
 }
 
