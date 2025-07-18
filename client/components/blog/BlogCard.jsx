@@ -11,10 +11,14 @@ const BlogCard = ({ blog }) => {
       onClick={() => router.push(`/blog/${slug}`)}
       className="w-full max-w-xs mx-auto rounded-xl overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-xl cursor-pointer"
     >
-      <div
-        className="h-48 w-full bg-center bg-contain bg-no-repeat"
-        style={{ backgroundImage: `url(${image})` }}
-      ></div>
+      <div className="h-48 w-full relative">
+        <img
+          src={`${image}?tr=w-500,h-192,c-at_max`} // ImageKit transformation: max width/height crop
+          alt={title}
+          className="object-cover w-full h-full"
+          loading="lazy"
+        />
+      </div>
 
       <div className="p-4 shadow-md bg-base-100">
         <span className="inline-block bg-base-200 text-xs text-base-content px-3 py-1 rounded-full uppercase tracking-wide">

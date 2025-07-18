@@ -8,7 +8,7 @@ import "quill/dist/quill.snow.css";
 import "quill-image-uploader/dist/quill.imageUploader.min.css";
 import { useAppContext } from "@/app/context/AppContext";
 import Loading from "@/components/blog/Loading";
-import { assets, blogCategories } from "@/app/assests/blog/assets";
+import { blogCategories } from "@/app/assests/blog/assets";
 
 const AddBlog = () => {
   const [loading, setLoading] = useState(false);
@@ -36,13 +36,18 @@ const AddBlog = () => {
         quillRef.current = new Quill(editorRef.current, {
           theme: "snow",
           modules: {
-            toolbar: [
-              [{ header: [1, 2, false] }],
-              ["bold", "italic", "underline", "strike"],
-              [{ list: "ordered" }, { list: "bullet" }],
-              ["link", "image"],
-              ["clean"],
-            ],
+            toolbar: {
+              container: [
+                [{ header: [1, 2, false] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["link", "image"],
+                [{ align: ["", "center", "right"] }],
+                [{ color: [] }, { background: [] }],
+                ["clean"],
+              ],
+              handlers: {},
+            },
             imageUploader: {
               upload: async (file) => {
                 const formData = new FormData();
@@ -61,6 +66,7 @@ const AddBlog = () => {
             },
           },
         });
+        quillRef.current.format("align", "left");
         setQuillReady(true);
       }
     };
@@ -201,7 +207,7 @@ const AddBlog = () => {
         />
 
         <p className="my-3">Blog Description</p>
-        <div className="max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative shadow-lg">
+        <div className="w-full h-74 pb-16 sm:pb-10 pt-2 relative shadow-lg">
           <div
             ref={editorRef}
             className="bg-base-100 ql-editor max-w-full prose"

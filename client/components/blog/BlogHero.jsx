@@ -26,7 +26,7 @@ const BlogHero = () => {
           <br /> <span className="text-primary font-bold"> Jonadest </span>
           Blog <span className="text-4xl">👐</span>
         </p>
-        <h1 className="text-[46px] lg:text-[70px] font-semibold pt-2 leading-12 lg:leading-18 text-shadow-lg capitalize">
+        <h1 className="text-[46px] lg:text-[70px] font-semibold pb-4 pt-2 leading-12 lg:leading-18 text-shadow-lg capitalize">
           Get inspired and join the digital world
         </h1>
 
