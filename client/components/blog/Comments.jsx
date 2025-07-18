@@ -25,7 +25,6 @@ const Comments = ({ slug }) => {
 
   const cleanedSlug = slug?.trim();
 
-  // Fetch blog data
   useEffect(() => {
     const fetchBlogData = async () => {
       try {
@@ -33,16 +32,16 @@ const Comments = ({ slug }) => {
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/slug/${cleanedSlug}`,
           { cache: "no-store" }
         );
-
         if (!res.ok) throw new Error("Failed to fetch blog data");
+
         const { blog } = await res.json();
         setBlogData(blog);
 
-        const url = `${window.location.origin}/blog/${cleanedSlug}`;
-        setBlogUrl(url);
+        const currentUrl = `${window.location.origin}/blog/${cleanedSlug}`;
+        setBlogUrl(currentUrl);
 
+        // Set meta description dynamically
         document.title = blog?.title || "Jonadest Blog";
-
         const metaDescription = document.querySelector(
           'meta[name="description"]'
         );
@@ -52,6 +51,23 @@ const Comments = ({ slug }) => {
             blog?.subTitle || "Explore amazing tech content on Jonadest."
           );
         }
+
+        // Optional: Set Open Graph meta for client-only pages
+        const setMeta = (property, content) => {
+          let tag = document.querySelector(`meta[property="${property}"]`);
+          if (!tag) {
+            tag = document.createElement("meta");
+            tag.setAttribute("property", property);
+            document.head.appendChild(tag);
+          }
+          tag.setAttribute("content", content);
+        };
+
+        setMeta("og:title", blog?.title);
+        setMeta("og:description", blog?.subTitle || "");
+        setMeta("og:image", blog?.image || "");
+        setMeta("og:url", currentUrl);
+        setMeta("og:type", "article");
       } catch (error) {
         console.error("Blog data fetch error:", error);
         toast.error("Could not load blog data.");
@@ -61,7 +77,6 @@ const Comments = ({ slug }) => {
     if (cleanedSlug) fetchBlogData();
   }, [cleanedSlug]);
 
-  // Fetch approved comments
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -108,9 +123,8 @@ const Comments = ({ slug }) => {
   };
 
   const shareText = blogData
-    ? encodeURIComponent(`Check out this blog post: ${blogData.title}`)
+    ? encodeURIComponent(`${blogData.title} - ${blogData.subTitle}`)
     : "Check out this blog post!";
-
   const encodedUrl = encodeURIComponent(blogUrl);
 
   const handleNativeShare = async () => {
@@ -133,24 +147,20 @@ const Comments = ({ slug }) => {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
+      {/* Comments Section */}
       <p className="pb-6">Comments ({comments.length})</p>
 
       <div className="flex flex-col gap-4 mb-6">
         {comments.map((item, index) => (
           <div key={item._id || index} className="card p-4 bg-base-100/50">
             <div className="flex justify-start items-start gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
+              <svg className="size-6" viewBox="0 0 24 24" fill="none">
                 <path
+                  d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                 />
               </svg>
 
@@ -168,6 +178,7 @@ const Comments = ({ slug }) => {
         ))}
       </div>
 
+      {/* Comment Form */}
       <p>
         <strong>Add your comment</strong>
       </p>
@@ -181,18 +192,18 @@ const Comments = ({ slug }) => {
           onChange={(e) => setName(e.target.value)}
         />
         <textarea
-          name="Comment"
           placeholder="Comment"
           required
           className="input h-48 w-full p-2 mb-3"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-        ></textarea>
+        />
         <button type="submit" className="btn">
           Submit
         </button>
       </form>
 
+      {/* Share Buttons */}
       <div className="flex flex-col my-6">
         <p className="mb-2">
           <strong>Share this article on social media</strong>
@@ -210,7 +221,6 @@ const Comments = ({ slug }) => {
           >
             <FaFacebook size={24} />
           </button>
-
           <button
             onClick={() =>
               window.open(
@@ -223,7 +233,6 @@ const Comments = ({ slug }) => {
           >
             <FaLinkedin size={24} />
           </button>
-
           <button
             onClick={() =>
               window.open(
@@ -236,7 +245,6 @@ const Comments = ({ slug }) => {
           >
             <FaTwitter size={24} />
           </button>
-
           <button
             onClick={() =>
               window.open(
@@ -249,7 +257,6 @@ const Comments = ({ slug }) => {
           >
             <FaWhatsapp size={24} />
           </button>
-
           <button
             onClick={() => window.open("https://www.instagram.com/", "_blank")}
             title="View on Instagram"
@@ -257,7 +264,6 @@ const Comments = ({ slug }) => {
           >
             <FaInstagram size={24} />
           </button>
-
           <button
             className="btn btn-sm bg-base-300 hover:bg-base-200"
             onClick={handleNativeShare}

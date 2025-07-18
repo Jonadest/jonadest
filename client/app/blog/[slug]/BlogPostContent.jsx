@@ -48,7 +48,12 @@ export default function BlogPostContent({ slug }) {
     if (slug) fetchBlogData();
   }, [fetchBlogData, slug]);
 
-  if (!data) return <p className="text-center mt-10">Loading...</p>;
+  if (!data)
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <span className="loading loading-infinity  w-[50px]"></span>
+      </div>
+    );
 
   const date = dayjs(data.createdAt);
   const formattedDate = date.format("MMMM D, YYYY");
