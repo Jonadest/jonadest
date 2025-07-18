@@ -7,7 +7,7 @@ export async function generateMetadata({ params }) {
   try {
     const res = await fetch(
       `${
-        process.env.NEXT_PUBLIC_BACKEND_URL || "http://172.20.10.8:5000"
+        process.env.NEXT_PUBLIC_BACKEND_URL || "172.20.10.8:5000"
       }/api/blog/slug/${slug}`
     );
     const data = await res.json();
