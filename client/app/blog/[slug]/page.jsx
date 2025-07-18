@@ -1,7 +1,7 @@
 import SingleBlogPage from "@/components/blog/SingleBlogPage";
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
+  const { slug } = params; // ✅ no need for `await`
 
   try {
     const res = await fetch(
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
       openGraph: {
         title,
         description,
-        url: `https://jonadest.com/blog/${slug}`,
+        url: `https://www.jonadest.com/blog/${slug}`, // ✅ correct domain
         type: "article",
         images: image
           ? [
@@ -58,6 +58,6 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function BlogPage({ params }) {
-  return <SingleBlogPage slug={await params.slug} />;
+export default function BlogPage({ params }) {
+  return <SingleBlogPage slug={params.slug} />; // ✅ no `await` needed
 }
