@@ -1,14 +1,18 @@
-// app/layout.tsx
-import "../../app/globals.css";
+// app/blog/layout.tsx
 import { Toaster } from "react-hot-toast";
 import { AppProvider } from "../context/AppContext";
 import Navbar from "@/components/blog/Navbar";
 import { assets } from "../assests/blog/assets";
 
-export default function BlogLayout({ children }) {
+export default function BlogLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <body
+    <AppProvider>
+      <Toaster position="top-center" />
+      <div
         className="min-h-screen w-full"
         style={{
           backgroundImage: `url(${assets.gradientBackground})`,
@@ -16,12 +20,9 @@ export default function BlogLayout({ children }) {
           backgroundPosition: "center",
         }}
       >
-        <AppProvider>
-          <Toaster position="top-center" />
-          <Navbar />
-          <main className="flex flex-col flex-1">{children}</main>
-        </AppProvider>
-      </body>
-    </html>
+        <Navbar />
+        <main className="flex flex-col flex-1">{children}</main>
+      </div>
+    </AppProvider>
   );
 }
