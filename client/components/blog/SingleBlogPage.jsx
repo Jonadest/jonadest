@@ -13,7 +13,8 @@ const SingleBlogPage = ({ slug }) => {
 
   const fetchBlogData = useCallback(async () => {
     try {
-      const res = await axios.get(`/api/blog/slug/${slug || _d}`);
+      const cleanedSlug = slug.trim(); // ✅ Fix newline or spaces
+      const res = await axios.get(`/api/blog/slug/${cleanedSlug}`);
       if (res.data.success) {
         setData(res.data.blog);
       } else {
@@ -31,7 +32,7 @@ const SingleBlogPage = ({ slug }) => {
   return data ? (
     <div>
       <SingleBlog blog={data} />
-      <Comments blogId={data.id} />
+      <Comments blogId={data._id} />
     </div>
   ) : (
     <Loading />

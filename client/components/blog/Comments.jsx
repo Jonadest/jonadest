@@ -23,51 +23,52 @@ const Comments = ({ slug }) => {
   const [content, setContent] = useState("");
   const [blogUrl, setBlogUrl] = useState("");
 
-  // Fetch blog data and set URL
+  const cleanedSlug = slug?.trim();
+
+  // Fetch blog data
   useEffect(() => {
     const fetchBlogData = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${slug}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/slug/${cleanedSlug}`,
           { cache: "no-store" }
         );
 
         if (!res.ok) throw new Error("Failed to fetch blog data");
-        const data = await res.json();
-        setBlogData(data);
+        const { blog } = await res.json();
+        setBlogData(blog);
 
-        // Set URL for sharing
-        const url = `${window.location.origin}/blog/${slug}`;
+        const url = `${window.location.origin}/blog/${cleanedSlug}`;
         setBlogUrl(url);
 
-        // Update document title for client-side
-        document.title = data?.title || "Jonadest Blog";
+        document.title = blog?.title || "Jonadest Blog";
 
-        // Update meta tags (note: this won't affect SEO crawlers)
         const metaDescription = document.querySelector(
           'meta[name="description"]'
         );
         if (metaDescription) {
           metaDescription.setAttribute(
             "content",
-            data?.subTitle || "Explore amazing tech content on Jonadest."
+            blog?.subTitle || "Explore amazing tech content on Jonadest."
           );
         }
       } catch (error) {
         console.error("Blog data fetch error:", error);
+        toast.error("Could not load blog data.");
       }
     };
 
-    fetchBlogData();
-  }, [slug]);
+    if (cleanedSlug) fetchBlogData();
+  }, [cleanedSlug]);
 
-  // Fetch comments
+  // Fetch approved comments
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const { data } = await axios.post("/api/blog/comment", {
-          slug, // Changed from blogId to slug
+        const { data } = await axios.post("/api/blog/comment/get", {
+          blogId: blogData?._id,
         });
+
         if (data.success) {
           setComments(data.comments);
         } else {
@@ -78,14 +79,14 @@ const Comments = ({ slug }) => {
       }
     };
 
-    if (slug) fetchComments();
-  }, [axios, slug]);
+    if (blogData?._id) fetchComments();
+  }, [axios, blogData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post("/api/blog/add-comment", {
-        slug, // Changed from blogId to slug
+      const { data } = await axios.post("/api/blog/comment/add", {
+        blog: blogData._id,
         name,
         content,
       });
@@ -108,7 +109,7 @@ const Comments = ({ slug }) => {
 
   const shareText = blogData
     ? encodeURIComponent(`Check out this blog post: ${blogData.title}`)
-    : encodeURIComponent("Check out this blog post!");
+    : "Check out this blog post!";
 
   const encodedUrl = encodeURIComponent(blogUrl);
 
@@ -134,7 +135,6 @@ const Comments = ({ slug }) => {
     <div className="max-w-3xl mx-auto p-6">
       <p className="pb-6">Comments ({comments.length})</p>
 
-      {/* Comment List */}
       <div className="flex flex-col gap-4 mb-6">
         {comments.map((item, index) => (
           <div key={item._id || index} className="card p-4 bg-base-100/50">
@@ -168,7 +168,6 @@ const Comments = ({ slug }) => {
         ))}
       </div>
 
-      {/* Add Comment Form */}
       <p>
         <strong>Add your comment</strong>
       </p>
@@ -194,7 +193,6 @@ const Comments = ({ slug }) => {
         </button>
       </form>
 
-      {/* Share Section */}
       <div className="flex flex-col my-6">
         <p className="mb-2">
           <strong>Share this article on social media</strong>

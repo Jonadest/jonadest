@@ -1,48 +1,52 @@
 import SingleBlogPage from "@/components/blog/SingleBlogPage";
 
 export async function generateMetadata({ params }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/${slug}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/slug/${slug}`,
       { cache: "no-store" }
     );
 
     const contentType = res.headers.get("content-type");
     if (!res.ok || !contentType?.includes("application/json")) {
-      throw new Error("Invalid response type or status");
+      throw new Error("Invalid response");
     }
 
-    const blog = await res.json();
+    const { blog } = await res.json();
+
+    const title = blog?.title || "Jonadest Blog";
+    const description =
+      blog?.subTitle || "Explore amazing tech content on Jonadest.";
+    const image = blog?.image?.startsWith("http")
+      ? blog.image
+      : `${process.env.NEXT_PUBLIC_BACKEND_URL}${blog.image}`;
 
     return {
-      title: blog?.title || "Jonadest Blog",
-      description:
-        blog?.subTitle || "Explore amazing tech content on Jonadest.",
+      title,
+      description,
       openGraph: {
-        title: blog?.title || "Jonadest Blog",
-        description:
-          blog?.subTitle || "Explore amazing tech content on Jonadest.",
-        url: `https://yourdomain.com/blog/${slug}`,
-        images: blog?.imageUrl
+        title,
+        description,
+        url: `https://jonadest.com/blog/${slug}`,
+        type: "article",
+        images: image
           ? [
               {
-                url: blog.imageUrl,
+                url: image,
                 width: 1200,
                 height: 630,
-                alt: blog.title || "Jonadest Blog",
+                alt: title,
               },
             ]
           : [],
-        type: "article",
       },
       twitter: {
         card: "summary_large_image",
-        title: blog?.title || "Jonadest Blog",
-        description:
-          blog?.subTitle || "Explore amazing tech content on Jonadest.",
-        images: blog?.imageUrl ? [blog.imageUrl] : [],
+        title,
+        description,
+        images: image ? [image] : [],
       },
     };
   } catch (err) {
@@ -55,5 +59,5 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function BlogPage({ params }) {
-  return <SingleBlogPage slug={params.slug} />;
+  return <SingleBlogPage slug={await params.slug} />;
 }
