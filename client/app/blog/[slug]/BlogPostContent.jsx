@@ -69,7 +69,7 @@ export default function BlogPostContent({ slug }) {
           {utcTime}
         </p>
         <h1
-          className="text-[45px] font-bold leading-14 py-6"
+          className="text-[28px] md:text-[45px] uppercase font-bold md:leading-14 py-6"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(data.title),
           }}
