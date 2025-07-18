@@ -204,73 +204,26 @@ const Comments = ({ slug }) => {
       </form>
 
       {/* Share Buttons */}
-      <div className="flex flex-col my-6">
-        <p className="mb-2">
-          <strong>Share this article on social media</strong>
+      <div className="flex items-center items-center gap-3 my-6">
+        <p>
+          <strong>Share this article </strong>
         </p>
-        <div className="flex gap-4 flex-wrap items-center">
-          <button
-            onClick={() =>
-              window.open(
-                `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-                "_blank"
-              )
-            }
-            title="Share on Facebook"
-            className="social-share-btn"
-          >
-            <FaFacebook size={24} />
-          </button>
-          <button
-            onClick={() =>
-              window.open(
-                `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${shareText}`,
-                "_blank"
-              )
-            }
-            title="Share on LinkedIn"
-            className="social-share-btn"
-          >
-            <FaLinkedin size={24} />
-          </button>
-          <button
-            onClick={() =>
-              window.open(
-                `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`,
-                "_blank"
-              )
-            }
-            title="Share on Twitter"
-            className="social-share-btn"
-          >
-            <FaTwitter size={24} />
-          </button>
-          <button
-            onClick={() =>
-              window.open(
-                `https://wa.me/?text=${shareText}%20${encodedUrl}`,
-                "_blank"
-              )
-            }
-            title="Share via WhatsApp"
-            className="social-share-btn"
-          >
-            <FaWhatsapp size={24} />
-          </button>
-          <button
-            onClick={() => window.open("https://www.instagram.com/", "_blank")}
-            title="View on Instagram"
-            className="social-share-btn"
-          >
-            <FaInstagram size={24} />
-          </button>
-          <button
-            className="btn btn-sm bg-base-300 hover:bg-base-200"
-            onClick={handleNativeShare}
-          >
-            📱 Share
-          </button>
-        </div>
+
+        <svg
+          onClick={handleNativeShare}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="size-6 md:size-12 bg-base-300 rounded-full p-1 md:p-2 cursor-pointer hover:bg-base-200 transition-colors"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+          />
+        </svg>
       </div>
     </div>
   );

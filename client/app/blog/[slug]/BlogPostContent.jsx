@@ -103,7 +103,7 @@ export default function BlogPostContent({ slug }) {
         <img
           src={data.image}
           alt="blog image"
-          className="h-[500px] object-cover rounded-lg"
+          className=" object-cover rounded-lg"
         />
       </div>
 
