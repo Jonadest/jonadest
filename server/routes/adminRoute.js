@@ -9,6 +9,7 @@ import {
   getDashboard,
 } from "../controllers/adminController.js";
 import auth from "../middleware/auth.js";
+import { getBlogBySlug } from "../controllers/blogController.js";
 
 const adminRouter = express.Router();
 adminRouter.post("/login", adminLogin);
@@ -18,5 +19,6 @@ adminRouter.get("/drafts", auth, getAllDrafts);
 adminRouter.post("/delete-comment", auth, deleteCommentById);
 adminRouter.post("/approve-comment", auth, approveCommentById);
 adminRouter.get("/blog", auth, getDashboard);
+adminRouter.get("/edit-blog/:slug", auth, getBlogBySlug);
 
 export default adminRouter;

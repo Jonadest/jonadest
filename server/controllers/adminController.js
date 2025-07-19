@@ -122,3 +122,20 @@ export const getAllDrafts = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// controllers/adminController.js
+
+export const getBlogBySlug = async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const blog = await Blog.findOne({ slug });
+    if (!blog) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
+    }
+    return res.status(200).json({ success: true, blog });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { assets } from "@/app/assests/blog/assets";
 
 dayjs.extend(relativeTime);
 
@@ -25,7 +26,7 @@ export default function Comments() {
 
     const fetchBlog = async () => {
       try {
-        const { data } = await axios.get(`/api/blog/${slug}`);
+        const { data } = await axios.get(`/api/blog/slug/${slug}`);
         if (data.success) {
           setBlog(data.blog);
         } else {
@@ -110,17 +111,37 @@ export default function Comments() {
       </form>
 
       <div className="mt-10">
-        <h4 className="text-lg font-medium mb-2">Comments</h4>
+        <h4 className=" font-medium mb-2">Comments({comments.length})</h4>
         {comments.length === 0 && (
           <p className="text-gray-500">No comments yet.</p>
         )}
         {comments.map((comment) => (
-          <div key={comment._id} className="mb-4 border-b pb-2">
-            <p className="font-semibold">{comment.name}</p>
-            <p className="text-sm text-gray-600">
-              {dayjs(comment.createdAt).fromNow()}
-            </p>
-            <p>{comment.content}</p>
+          <div key={comment._id} className="mb-4  pb-2 card p-4 bg-base-300/50">
+            <div className="flex justify-between">
+              <div className="flex items-center gap-2 py-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+                <p className="font-semibold">{comment.name}</p>
+              </div>
+
+              <p className="text-sm text-gray-600">
+                {dayjs(comment.createdAt).fromNow()}
+              </p>
+            </div>
+
+            <p className="text-sm ml-8">{comment.content}</p>
           </div>
         ))}
       </div>

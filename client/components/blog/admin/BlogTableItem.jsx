@@ -2,20 +2,23 @@
 
 import { useAppContext } from "@/app/context/AppContext";
 import toast from "react-hot-toast";
+import Link from "next/link";
+import { useState } from "react";
 
 const BlogTableItem = ({ blog, index }) => {
-  const { title, createdAt } = blog;
+  const { title, createdAt, slug } = blog;
   const BlogDate = new Date(createdAt);
 
   const { axios, setBlogs } = useAppContext();
+  const [loading, setLoading] = useState(false);
 
-  // 🗑️ Delete blog and update UI
   const deleteBlog = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this blog?"
     );
     if (!confirmDelete) return;
 
+    setLoading(true);
     try {
       const { data } = await axios.post("/api/blog/delete", {
         id: blog._id,
@@ -28,12 +31,14 @@ const BlogTableItem = ({ blog, index }) => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Failed to delete blog.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🔁 Toggle publish status
   const togglePublish = async () => {
+    setLoading(true);
     try {
       const { data } = await axios.post("/api/blog/toggle-publish", {
         id: blog._id,
@@ -50,40 +55,55 @@ const BlogTableItem = ({ blog, index }) => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Failed to update blog status.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <tr className="border-y border-base-300">
       <th className="px-2 py-4">{index}</th>
-      <td className="px-2 py-4">{title}</td>
+
+      <td className="px-2 py-4 max-w-xs truncate" title={title}>
+        {title}
+      </td>
+
       <td className="px-2 py-4">{BlogDate.toLocaleDateString()}</td>
+
       <td className="px-2 py-4 max-sm:hidden">
-        <p
-          className={`${
-            blog.isPublished ? "text-green-600" : "text-orange-600"
-          }`}
-        >
+        <p className={blog.isPublished ? "text-green-600" : "text-orange-600"}>
           {blog.isPublished ? "Published" : "Unpublished"}
         </p>
       </td>
-      <td className="flex px-2 py-4 gap-3 items-center max-sm:hidden">
+
+      <td className="flex px-2 py-4 gap-3 items-center max-sm:flex-col max-sm:items-start">
         <button
           onClick={togglePublish}
-          className="border px-2 py-0.5 mt-1 rounded cursor-pointer"
+          disabled={loading}
+          className="border px-2 py-0.5 rounded text-sm disabled:opacity-50"
         >
           {blog.isPublished ? "Unpublish" : "Publish"}
         </button>
 
+        <Link
+          href={`/blog/admin/edit-blog/${slug}`}
+          className="border px-2 py-0.5 rounded text-sm text-blue-600 hover:underline"
+        >
+          Edit
+        </Link>
+
         <svg
           onClick={deleteBlog}
+          title="Delete blog"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-6 cursor-pointer"
+          className={`size-6 cursor-pointer text-red-600 ${
+            loading && "opacity-50 pointer-events-none"
+          }`}
         >
           <path
             strokeLinecap="round"
