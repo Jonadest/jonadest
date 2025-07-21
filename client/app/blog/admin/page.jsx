@@ -146,11 +146,11 @@ const Dashboard = () => {
         <table className="w-full text-sm">
           <thead className="text-xs text-left uppercase">
             <tr>
-              <th className="px-2 py-4 xl:px-6">#</th>
+              <th className=" px-2 py-4 xl:px-6">#</th>
               <th className="px-2 py-4">Title</th>
-              <th className="px-2 py-4">Date</th>
+              <th className="px-2 py-4 max-sm:hidden">Date</th>
               <th className="px-2 py-4 max-sm:hidden">Status</th>
-              <th className="px-2 py-4 max-sm:hidden">Actions</th>
+              <th className="px-2 py-4 ">Actions</th>
             </tr>
           </thead>
           <tbody>

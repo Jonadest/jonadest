@@ -2,7 +2,6 @@
 import { Toaster } from "react-hot-toast";
 import { AppProvider } from "../context/AppContext";
 import Navbar from "@/components/blog/Navbar";
-import { assets } from "../assests/blog/assets";
 
 export default function BlogLayout({
   children,
