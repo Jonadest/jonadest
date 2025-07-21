@@ -62,8 +62,8 @@ export const assets = {
 export const blogCategories = [
   "All",
   "Technology",
+  "Programming",
   "Business",
-  "Sports",
   "Lifestyle",
   "Inspiration",
 ];

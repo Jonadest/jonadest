@@ -18,8 +18,12 @@ const BlogHero = () => {
     setInput("");
     inputRef.current.value = "";
   };
+
   return (
-    <div className=" mx-auto w-[90%] lg:w-full text-center bg-center relative bg-cover">
+    <div
+      className="mx-auto w-[90%] lg:w-full text-center bg-center relative bg-cover min-h-[100vh]"
+     
+    >
       <div className="details px-3 lg:px-[350px] pt-8">
         <p className="font-sourgummy text-3xl pb-6">
           Welcome to
@@ -30,7 +34,7 @@ const BlogHero = () => {
           Get inspired and join the digital world
         </h1>
 
-        <code className="text-[18px]  mt-6 italic">
+        <code className="text-[18px] mt-6 italic">
           Learn. Discover. Stay Connected.
         </code>
 
@@ -47,6 +51,7 @@ const BlogHero = () => {
           <button className="btn">Search</button>
         </form>
       </div>
+
       <div className="text-center">
         {input && (
           <button onClick={onClear} className="btn tracking-wider">
@@ -54,6 +59,7 @@ const BlogHero = () => {
           </button>
         )}
       </div>
+
       <Bloglist />
       <NewsLetter />
     </div>

@@ -1,150 +1,273 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import toast from "react-hot-toast";
-import axios from "axios";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { assets } from "@/app/assests/blog/assets";
+import toast from "react-hot-toast";
+import {
+  FaFacebook,
+  FaLinkedin,
+  FaTwitter,
+  FaWhatsapp,
+  FaInstagram,
+} from "react-icons/fa";
+import { useAppContext } from "@/app/context/AppContext";
 
 dayjs.extend(relativeTime);
 
-export default function Comments() {
-  const params = useParams();
-  const slug = params?.slug;
-
+const Comments = ({ slug }) => {
+  const { axios } = useAppContext();
+  const [blogData, setBlogData] = useState(null);
   const [comments, setComments] = useState([]);
-  const [blog, setBlog] = useState(null); // stores blog details (like title, etc.)
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [blogUrl, setBlogUrl] = useState("");
 
-  // Fetch blog and its comments
+  const cleanedSlug = slug?.trim();
+
+  // Fetch blog data
   useEffect(() => {
-    if (!slug) return;
-
-    const fetchBlog = async () => {
+    const fetchBlogData = async () => {
       try {
-        const { data } = await axios.get(`/api/blog/slug/${slug}`);
-        if (data.success) {
-          setBlog(data.blog);
-        } else {
-          toast.error("Failed to load blog");
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blog/slug/${cleanedSlug}`,
+          { cache: "no-store" }
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch blog data");
+        const { blog } = await res.json();
+        setBlogData(blog);
+
+        const url = `${window.location.origin}/blog/${cleanedSlug}`;
+        setBlogUrl(url);
+
+        // Set SEO meta
+        document.title = blog?.title || "Jonadest Blog";
+        const metaDescription = document.querySelector(
+          'meta[name="description"]'
+        );
+        if (metaDescription) {
+          metaDescription.setAttribute(
+            "content",
+            blog?.subTitle || "Explore amazing tech content on Jonadest."
+          );
         }
       } catch (error) {
-        toast.error("Error loading blog");
+        console.error("Blog fetch error:", error);
+        toast.error("Could not load blog data.");
       }
     };
 
+    if (cleanedSlug) fetchBlogData();
+  }, [cleanedSlug]);
+
+  // Fetch approved comments
+  useEffect(() => {
     const fetchComments = async () => {
       try {
-        const { data } = await axios.post("/api/blog/comment", { slug });
+        const { data } = await axios.post("/api/blog/comment/get", {
+          blogId: blogData?._id,
+        });
+
         if (data.success) {
           setComments(data.comments);
         } else {
           toast.error(data.message);
         }
       } catch (error) {
-        toast.error("Failed to load comments");
+        toast.error(error?.message || "Failed to fetch comments.");
       }
     };
 
-    fetchBlog();
-    fetchComments();
-  }, [slug]);
+    if (blogData?._id) fetchComments();
+  }, [axios, blogData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name || !content) {
-      toast.error("Please fill out all fields");
-      return;
-    }
-
-    setLoading(true);
     try {
-      const { data } = await axios.post("/api/blog/add-comment", {
-        slug,
+      const { data } = await axios.post("/api/blog/comment/add", {
+        blog: blogData._id,
         name,
         content,
       });
 
       if (data.success) {
-        toast.success(data.message || "Comment submitted!");
+        toast.success(data.message);
+        setComments((prev) => [
+          ...prev,
+          { name, content, createdAt: new Date() },
+        ]);
         setName("");
         setContent("");
       } else {
-        toast.error(data.message || "Failed to submit comment");
+        toast.error(data.message);
       }
-    } catch (err) {
-      toast.error("Error submitting comment");
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error("Comment submit error:", error);
+      toast.error(error?.response?.data?.message || "Failed to add comment.");
+    }
+  };
+
+  const shareText = blogData
+    ? encodeURIComponent(`Check out this blog post: ${blogData.title}`)
+    : "Check out this blog post!";
+  const encodedUrl = encodeURIComponent(blogUrl);
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: blogData?.title || "Jonadest Blog",
+          text:
+            blogData?.subTitle ||
+            "I found this interesting blog post you might like",
+          url: blogUrl,
+        });
+      } catch (err) {
+        toast.error("Could not share.");
+      }
+    } else {
+      toast("Sharing not supported on this browser.");
     }
   };
 
   return (
-    <div className="mt-12">
-      <h3 className="text-xl font-semibold mb-4">Leave a Comment</h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="input mb-3 w-full"
-        />
-        <textarea
-          placeholder="Your comment"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="input h-48 w-full p-2 mb-3"
-        />
-        <button
-          type="submit"
-          disabled={!slug || loading}
-          className="bg-black text-white px-4 py-2 rounded-md hover:opacity-80 disabled:opacity-50"
-        >
-          {loading ? "Submitting..." : "Submit"}
-        </button>
-      </form>
+    <div className="max-w-3xl mx-auto p-6">
+      <p className="pb-6">Comments ({comments.length})</p>
 
-      <div className="mt-10">
-        <h4 className=" font-medium mb-2">Comments({comments.length})</h4>
-        {comments.length === 0 && (
-          <p className="text-gray-500">No comments yet.</p>
-        )}
-        {comments.map((comment) => (
-          <div key={comment._id} className="mb-4  pb-2 card p-4 bg-base-300/50">
-            <div className="flex justify-between">
-              <div className="flex items-center gap-2 py-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                </svg>
-                <p className="font-semibold">{comment.name}</p>
+      <div className="flex flex-col gap-4 mb-6">
+        {comments.map((item, index) => (
+          <div key={item._id || index} className="card p-4 bg-base-100/50">
+            <div className="flex justify-start items-start gap-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+              <div className="flex flex-col w-full">
+                <div className="flex justify-between items-start w-full">
+                  <p className="font-medium">{item.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {dayjs(item.createdAt).fromNow()}
+                  </p>
+                </div>
+                <p className="text-sm">{item.content}</p>
               </div>
-
-              <p className="text-sm text-gray-600">
-                {dayjs(comment.createdAt).fromNow()}
-              </p>
             </div>
-
-            <p className="text-sm ml-8">{comment.content}</p>
           </div>
         ))}
       </div>
+
+      <p>
+        <strong>Add your comment</strong>
+      </p>
+      <form onSubmit={handleSubmit} className="flex flex-col items-start mt-3">
+        <input
+          type="text"
+          className="input mb-3 w-full"
+          placeholder="Name"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <textarea
+          name="Comment"
+          placeholder="Comment"
+          required
+          className="input h-48 w-full p-2 mb-3"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        ></textarea>
+        <button type="submit" className="btn">
+          Submit
+        </button>
+      </form>
+
+      <div className="flex flex-col my-6">
+        <p className="mb-2">
+          <strong>Share this article on social media</strong>
+        </p>
+        <div className="flex gap-4 flex-wrap items-center">
+          <button
+            onClick={() =>
+              window.open(
+                `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+                "_blank"
+              )
+            }
+            title="Share on Facebook"
+            className="social-share-btn"
+          >
+            <FaFacebook size={24} />
+          </button>
+
+          <button
+            onClick={() =>
+              window.open(
+                `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${shareText}`,
+                "_blank"
+              )
+            }
+            title="Share on LinkedIn"
+            className="social-share-btn"
+          >
+            <FaLinkedin size={24} />
+          </button>
+
+          <button
+            onClick={() =>
+              window.open(
+                `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${shareText}`,
+                "_blank"
+              )
+            }
+            title="Share on Twitter"
+            className="social-share-btn"
+          >
+            <FaTwitter size={24} />
+          </button>
+
+          <button
+            onClick={() =>
+              window.open(
+                `https://wa.me/?text=${shareText}%20${encodedUrl}`,
+                "_blank"
+              )
+            }
+            title="Share via WhatsApp"
+            className="social-share-btn"
+          >
+            <FaWhatsapp size={24} />
+          </button>
+
+          <button
+            onClick={() => window.open("https://www.instagram.com/", "_blank")}
+            title="View on Instagram"
+            className="social-share-btn"
+          >
+            <FaInstagram size={24} />
+          </button>
+
+          <button
+            className="btn btn-sm bg-base-300 hover:bg-base-200"
+            onClick={handleNativeShare}
+          >
+            📱 Share
+          </button>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Comments;

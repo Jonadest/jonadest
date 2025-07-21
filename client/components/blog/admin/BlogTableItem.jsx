@@ -4,6 +4,7 @@ import { useAppContext } from "@/app/context/AppContext";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { useState } from "react";
+import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 
 const BlogTableItem = ({ blog, index }) => {
   const { title, createdAt, slug } = blog;
@@ -65,11 +66,16 @@ const BlogTableItem = ({ blog, index }) => {
     <tr className="border-y border-base-300">
       <th className="px-2 py-4">{index}</th>
 
-      <td className="px-2 py-4 max-w-xs truncate" title={title}>
+      <td
+        className="px-2 py-4 max-w-[150px] sm:max-w-[200px] md:max-w-xs truncate"
+        title={title}
+      >
         {title}
       </td>
 
-      <td className="px-2 py-4">{BlogDate.toLocaleDateString()}</td>
+      <td className="hidden md:inline-block px-2 py-4">
+        {BlogDate.toDateString()}
+      </td>
 
       <td className="px-2 py-4 max-sm:hidden">
         <p className={blog.isPublished ? "text-green-600" : "text-orange-600"}>
@@ -77,18 +83,30 @@ const BlogTableItem = ({ blog, index }) => {
         </p>
       </td>
 
-      <td className="flex px-2 py-4 gap-3 items-center max-sm:flex-col max-sm:items-start">
+      <td className="flex px-2 py-4 gap-3 items-center ">
         <button
           onClick={togglePublish}
           disabled={loading}
-          className="border px-2 py-0.5 rounded text-sm disabled:opacity-50"
+          className="hidden md:inline-block border px-2 py-0.5 rounded text-sm disabled:opacity-50"
         >
           {blog.isPublished ? "Unpublish" : "Publish"}
         </button>
 
+        <button
+          onClick={togglePublish}
+          disabled={loading}
+          className="md:hidden text-sm disabled:opacity-50 mr-3"
+        >
+          {blog.isPublished ? (
+            <FaThumbsUp size={16} className="text-green-600" />
+          ) : (
+            <FaThumbsDown size={16} className="text-red-600" />
+          )}
+        </button>
+
         <Link
           href={`/blog/admin/edit-blog/${slug}`}
-          className="border px-2 py-0.5 rounded text-sm text-blue-600 hover:underline"
+          className="hidden md:inline-block border px-2 py-0.5 rounded text-sm text-blue-600 hover:underline"
         >
           Edit
         </Link>

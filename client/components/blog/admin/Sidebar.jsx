@@ -6,7 +6,10 @@ import { usePathname } from "next/navigation";
 const Sidebar = () => {
   const pathname = usePathname();
 
-  const isActive = (path) => pathname.startsWith(path);
+  const isActive = (path) => {
+    if (path === "/blog/admin") return pathname === "/blog/admin";
+    return pathname.startsWith(path);
+  };
 
   const linkClass = (path) =>
     `flex items-center gap-3 py-3.5 px-3 md:min-w-64 cursor-pointer transition-all ${

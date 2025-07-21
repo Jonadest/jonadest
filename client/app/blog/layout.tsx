@@ -15,7 +15,7 @@ export default function BlogLayout({
       <div
         className="min-h-screen w-full"
         style={{
-          backgroundImage: `url(${assets.gradientBackground})`,
+          backgroundImage: `url('/gradientBackground.png')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
